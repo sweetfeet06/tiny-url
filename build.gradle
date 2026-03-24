@@ -1,8 +1,9 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.0.1'
-	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.springframework.boot' version '4.0.4'
 }
+
+apply plugin: 'io.spring.dependency-management'
 
 group = 'com.origin'
 version = '0.0.1-SNAPSHOT'
@@ -19,15 +20,20 @@ repositories {
 }
 
 configurations {
-    mockitoAgent
+    mockitoAgent {
+        transitive = false
+    }
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation( 
+	    'org.springframework.boot:spring-boot-starter-web',
+	    'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+    )
 	testImplementation(
        libs.junit.jupiter,
        libs.mockito,
-	   'org.springframework.boot:spring-boot-starter-test'
+	   'org.springframework.boot:spring-boot-starter-webmvc-test'
 	)
     mockitoAgent(libs.mockito) {
          transitive = false
@@ -35,9 +41,11 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks {
-    test {
-	    useJUnitPlatform()
-	    jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
-	}
+test {
+  jvmArgs +="-javaagent:${configurations.testRuntimeClasspath.find { it.name.contains('mockito-core') }.absolutePath}"
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    jvmArgs +="-javaagent:${configurations.testRuntimeClasspath.find { it.name.contains('mockito-core') }.absolutePath}"
 }
