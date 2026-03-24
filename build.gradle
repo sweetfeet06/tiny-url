@@ -1,0 +1,43 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.0.1'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.origin'
+version = '0.0.1-SNAPSHOT'
+description = 'Tiny url with Spring Boot'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+configurations {
+    mockitoAgent
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	testImplementation(
+       libs.junit.jupiter,
+       libs.mockito,
+	   'org.springframework.boot:spring-boot-starter-test'
+	)
+    mockitoAgent(libs.mockito) {
+         transitive = false
+    }
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks {
+    test {
+	    useJUnitPlatform()
+	    jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
+	}
+}
