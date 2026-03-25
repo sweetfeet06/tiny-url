@@ -1,0 +1,54 @@
+package com.origin.takehome.controller;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.origin.takehome.exception.NotFoundException;
+import com.origin.takehome.service.UrlService;
+
+@WebMvcTest(controllers = {UrlRedirectController.class})
+class UrlRedirectControllerTest {
+    
+    @Autowired
+    private MockMvc mockMvc;
+    
+    @MockitoBean
+    private UrlService urlService;
+    
+    @Test
+    void shouldReturn404WithShortUriNotInSystem() throws Exception {
+        String shortUri = UUID.randomUUID().toString();
+        
+        when(urlService.expand(shortUri)).thenThrow(new NotFoundException("No short URI [" + shortUri +"] found in system"));
+        
+        mockMvc.perform(
+                get("/" + shortUri)
+        ).andExpect(status().isNotFound());
+    }
+    
+    @Test
+    void shouldRedirectIfGetWithExistingShortUri() throws Exception {
+        String shortUri = UUID.randomUUID().toString();
+        String originalUrl = "http://localhost/" + shortUri;
+        
+        when(urlService.expand(shortUri)).thenReturn(originalUrl);
+        
+
+        // When & Then
+        mockMvc.perform(
+                get("/" + shortUri)
+        ).andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("http://localhost/" + shortUri));;
+    }
+
+}
