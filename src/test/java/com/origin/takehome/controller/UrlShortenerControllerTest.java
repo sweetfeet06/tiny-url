@@ -6,12 +6,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.origin.takehome.exception.InvalidUrlException;
 import com.origin.takehome.service.UrlService;
 
 @WebMvcTest(controllers = {UrlShorternerController.class})
@@ -25,7 +28,7 @@ class UrlShortenerControllerTest {
     
     @Test 
     void shouldReturn400ForInvalidUrl() throws Exception {
-        when(urlService.shorten(any(String.class))).thenThrow(new IllegalArgumentException());
+        when(urlService.shorten(any(String.class))).thenThrow(new InvalidUrlException("Invalid URL"));
         
         mockMvc.perform(
                 post("/v1/short-url").content("some.address/uri")
@@ -34,9 +37,9 @@ class UrlShortenerControllerTest {
 
     @Test
     void shouldReturnShortUriForLongUrl() throws Exception {
-        String shortenedUri = "A1B2C3";
+        String shortUri = UUID.randomUUID().toString();
         
-        when(urlService.shorten(any(String.class))).thenReturn(shortenedUri);
+        when(urlService.shorten(any(String.class))).thenReturn(shortUri);
         
 
         // When & Then
@@ -44,7 +47,7 @@ class UrlShortenerControllerTest {
                 post("/v1/short-url").content("http://some.address/uri")
         ).andExpect(status().isCreated())
             .andExpect(content().contentType("text/plain;charset=UTF-8"))
-            .andExpect(content().string("http://localhost/" + shortenedUri));
+            .andExpect(content().string("http://localhost/" + shortUri));
     }
 
 }
