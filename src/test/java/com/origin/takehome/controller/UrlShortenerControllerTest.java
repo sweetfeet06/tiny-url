@@ -14,6 +14,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.origin.takehome.domain.ShortUriMap;
 import com.origin.takehome.exception.InvalidUrlException;
 import com.origin.takehome.service.UrlService;
 
@@ -37,14 +38,16 @@ class UrlShortenerControllerTest {
 
     @Test
     void shouldReturnShortUriForLongUrl() throws Exception {
+        String originalUrl = "http://some.address/uri";
         String shortUri = UUID.randomUUID().toString();
+        ShortUriMap expectedShortUri = new ShortUriMap(shortUri, originalUrl);
         
-        when(urlService.shorten(any(String.class))).thenReturn(shortUri);
+        when(urlService.shorten(any(String.class))).thenReturn(expectedShortUri);
         
 
         // When & Then
         mockMvc.perform(
-                post("/v1/short-url").content("http://some.address/uri")
+                post("/v1/short-url").content(originalUrl)
         ).andExpect(status().isCreated())
             .andExpect(content().contentType("text/plain;charset=UTF-8"))
             .andExpect(content().string("http://localhost/" + shortUri));

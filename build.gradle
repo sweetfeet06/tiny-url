@@ -28,17 +28,23 @@ configurations {
 dependencies {
 	implementation( 
 	    'org.springframework.boot:spring-boot-starter-web',
-	    'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+	    'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0',
+	    'org.springframework.boot:spring-boot-starter-data-jpa',
+	    'com.h2database:h2'
     )
 	testImplementation(
        libs.junit.jupiter,
        libs.mockito,
-	   'org.springframework.boot:spring-boot-starter-webmvc-test'
+	   'org.springframework.boot:spring-boot-starter-webmvc-test',
+	   'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	)
     mockitoAgent(libs.mockito) {
          transitive = false
     }
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly( 
+	    'org.junit.platform:junit-platform-launcher',
+	    'com.h2database:h2'
+	)
 }
 
 test {

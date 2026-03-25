@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.origin.takehome.domain.ShortUriMap;
 import com.origin.takehome.service.UrlService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,8 +37,9 @@ public class UrlShorternerController {
             @Parameter(description = "Original URL to be shortened", required = true)
             @RequestBody String originalUrl
     ) {
-        String shortUri = urlService.shorten(originalUrl);
+        ShortUriMap shortUri = urlService.shorten(originalUrl);
         URI baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUri();
-        return ResponseEntity.status(HttpStatus.CREATED).body(String.format("http://%s/%s", baseUrl.getHost(), shortUri));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(String.format("http://%s/%s", baseUrl.getHost(), shortUri.getShortUri()));
     }
 }

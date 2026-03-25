@@ -13,6 +13,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.origin.takehome.domain.ShortUriMap;
 import com.origin.takehome.exception.NotFoundException;
 import com.origin.takehome.service.UrlService;
 
@@ -40,8 +41,9 @@ class UrlRedirectControllerTest {
     void shouldRedirectIfGetWithExistingShortUri() throws Exception {
         String shortUri = UUID.randomUUID().toString();
         String originalUrl = "http://localhost/" + shortUri;
+        ShortUriMap expectedShortUri = new ShortUriMap(shortUri, originalUrl);
         
-        when(urlService.expand(shortUri)).thenReturn(originalUrl);
+        when(urlService.expand(shortUri)).thenReturn(expectedShortUri);
         
 
         // When & Then
