@@ -10,4 +10,9 @@ public class UrlService {
         return null;
     }
 
+    public String expand(String shortUri) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

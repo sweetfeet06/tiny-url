@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,11 +18,25 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler(InvalidUrlException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(
-            IllegalArgumentException ex, WebRequest request) {
-        logger.warn("Invalid argument: {}", ex.getMessage());
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Invalid request parameters", request);
+            InvalidUrlException ex, WebRequest request) {
+        logger.warn("Invalid URL: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Invalid URL provided", request);
+    }
+    
+    @ExceptionHandler(URISyntaxException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(
+            URISyntaxException ex, WebRequest request) {
+        logger.warn("Issue creating URL: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Issue creating URL for redirection", request);
+    }
+    
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(
+            NotFoundException ex, WebRequest request) {
+        logger.warn("Short uri not found: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request);
     }
 
     private ResponseEntity<Map<String, Object>> buildErrorResponse(
