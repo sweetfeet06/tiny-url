@@ -35,14 +35,14 @@ class UrlServiceTest {
     @BeforeEach
     void setUp() throws Exception {
         service = new UrlService(repository, validator);
-        when(repository.save(any(ShortUriMap.class))).thenAnswer(i -> i.getArguments()[0]);
-        when(validator.isValid(any(String.class))).thenReturn(true);
     }
 
     @Test
     void testShortenWithNewUrl() {
         //Given
         var originalUrl = "http://some.address/for/test";
+        when(validator.isValid(any(String.class))).thenReturn(true);
+        when(repository.save(any(ShortUriMap.class))).thenAnswer(i -> i.getArguments()[0]);
         
         //When
         var result = service.shorten(originalUrl);
