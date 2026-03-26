@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.origin.takehome.domain.ShortUriMap;
 import com.origin.takehome.exception.NotFoundException;
 import com.origin.takehome.repository.ShortUriRepository;
+import com.origin.takehome.util.TokenGenerator;
 
 @ExtendWith(MockitoExtension.class)
 class UrlServiceTest {
@@ -56,7 +56,7 @@ class UrlServiceTest {
     @Test
     void testExpandWithNonExistentShortUri() {
         //Given
-        var shortUri = UUID.randomUUID().toString();
+        var shortUri = TokenGenerator.token();
         
         //When then
         assertThrows(

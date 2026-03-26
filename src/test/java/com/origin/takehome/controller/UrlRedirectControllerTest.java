@@ -5,8 +5,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -16,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.origin.takehome.domain.ShortUriMap;
 import com.origin.takehome.exception.NotFoundException;
 import com.origin.takehome.service.UrlService;
+import com.origin.takehome.util.TokenGenerator;
 
 @WebMvcTest(controllers = {UrlRedirectController.class})
 class UrlRedirectControllerTest {
@@ -28,7 +27,7 @@ class UrlRedirectControllerTest {
     
     @Test
     void shouldReturn404WithShortUriNotInSystem() throws Exception {
-        String shortUri = UUID.randomUUID().toString();
+        String shortUri = TokenGenerator.token();
         
         when(urlService.expand(shortUri)).thenThrow(new NotFoundException("No short URI [" + shortUri +"] found in system"));
         
@@ -39,7 +38,7 @@ class UrlRedirectControllerTest {
     
     @Test
     void shouldRedirectIfGetWithExistingShortUri() throws Exception {
-        String shortUri = UUID.randomUUID().toString();
+        String shortUri = TokenGenerator.token();
         String originalUrl = "http://localhost/" + shortUri;
         ShortUriMap expectedShortUri = new ShortUriMap(shortUri, originalUrl);
         

@@ -7,8 +7,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -20,6 +18,7 @@ import com.origin.takehome.domain.ShortUriMap;
 import com.origin.takehome.exception.InvalidUrlException;
 import com.origin.takehome.exception.NotFoundException;
 import com.origin.takehome.service.UrlService;
+import com.origin.takehome.util.TokenGenerator;
 
 @WebMvcTest(controllers = {UrlShorternerController.class})
 class UrlShortenerControllerTest {
@@ -42,7 +41,7 @@ class UrlShortenerControllerTest {
     @Test
     void shouldReturnShortUriForLongUrl() throws Exception {
         String originalUrl = "http://some.address/uri";
-        String shortUri = UUID.randomUUID().toString();
+        String shortUri = TokenGenerator.token();
         ShortUriMap expectedShortUri = new ShortUriMap(shortUri, originalUrl);
         
         when(urlService.shorten(any(String.class))).thenReturn(expectedShortUri);
@@ -58,7 +57,7 @@ class UrlShortenerControllerTest {
     
     @Test
     void shouldReturn404ForShortUriWhenNotPresent() throws Exception {
-        String shortUri = UUID.randomUUID().toString();
+        String shortUri = TokenGenerator.token();
         
         
         when(urlService.expand(shortUri)).thenThrow(new NotFoundException("No short URI [" + shortUri +"] found in system"));
@@ -72,7 +71,7 @@ class UrlShortenerControllerTest {
     @Test
     void shouldReturnShortUriMapForShortUriWhenPresent() throws Exception {
         String originalUrl = "http://some.other.address/uri";
-        String shortUri = UUID.randomUUID().toString();
+        String shortUri = TokenGenerator.token();
         ShortUriMap expectedShortUriMap = new ShortUriMap(shortUri, originalUrl);
         
         

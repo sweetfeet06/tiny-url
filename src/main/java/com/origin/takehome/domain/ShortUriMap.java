@@ -1,6 +1,6 @@
 package com.origin.takehome.domain;
 
-import java.util.UUID;
+import com.origin.takehome.util.TokenGenerator;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,7 +17,7 @@ public class ShortUriMap {
     }
     
     public ShortUriMap(String originalUrl) {
-        this(UUID.randomUUID().toString(), originalUrl);
+        this(TokenGenerator.token(), originalUrl);
     }
     
     public ShortUriMap(String shortUri, String originalUrl) {
