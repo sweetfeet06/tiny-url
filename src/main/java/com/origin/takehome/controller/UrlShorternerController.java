@@ -2,6 +2,8 @@ package com.origin.takehome.controller;
 
 import java.net.URI;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 public class UrlShorternerController {
+    private static final Logger logger = LoggerFactory.getLogger(UrlShorternerController.class);
     
     @Autowired
     private UrlService urlService;
@@ -37,9 +40,22 @@ public class UrlShorternerController {
             @Parameter(description = "Original URL to be shortened", required = true)
             @RequestBody String originalUrl
     ) {
+        logger.info("shortening " + originalUrl);
         ShortUriMap shortUri = urlService.shorten(originalUrl);
-        URI baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUri();
+        URI baseUrl = baseUrl();
+
+        String shortUrl = shortUrl(shortUri, baseUrl);
+        
+        logger.info(String.format("shortened url for %s [%s]", originalUrl, shortUrl));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(String.format("http://%s/%s", baseUrl.getHost(), shortUri.getShortUri()));
+                .body(shortUrl);
+    }
+
+    private String shortUrl(ShortUriMap shortUri, URI baseUrl) {
+        return String.format("http://%s/%s", baseUrl.getHost(), shortUri.getShortUri());
+    }
+
+    private URI baseUrl() {
+        return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUri();
     }
 }
