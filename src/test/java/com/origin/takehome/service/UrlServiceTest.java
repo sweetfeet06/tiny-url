@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,20 +25,24 @@ class UrlServiceTest {
     
     @Mock
     private ShortUriRepository repository;
+
+    @Mock
+    private UrlValidator validator;
     
     @InjectMocks
     private UrlService service;
 
     @BeforeEach
     void setUp() throws Exception {
-        service = new UrlService(repository);
+        service = new UrlService(repository, validator);
+        when(repository.save(any(ShortUriMap.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(validator.isValid(any(String.class))).thenReturn(true);
     }
 
     @Test
     void testShortenWithNewUrl() {
         //Given
         var originalUrl = "http://some.address/for/test";
-        when(repository.save(any(ShortUriMap.class))).thenAnswer(i -> i.getArguments()[0]);
         
         //When
         var result = service.shorten(originalUrl);
